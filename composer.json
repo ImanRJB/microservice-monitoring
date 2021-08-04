@@ -1,6 +1,6 @@
 {
     "name": "milyoona/microservice-monitor",
-    "description": "Laravel Nova tool for running Artisan commands.",
+    "description": "Laravel Nova tool for microservice monitoring.",
     "keywords": [],
     "license": "MIT",
     "require": {
