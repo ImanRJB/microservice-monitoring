@@ -1,103 +1,93 @@
 <template>
     <div>
-        <portal to="modals">
-            <transition name="fade">
-                <modal
-                        v-if="modalOpen"
-                        class="modal"
-                        tabindex="-1"
-                        role="dialog"
-                >
-                    <div class="bg-white rounded-lg shadow-lg overflow-hidden w-action">
-                        <div>
-                            <h2 class="pt-8 px-8 text-90 font-normal text-xl">{{commandIndex}}</h2>
-                            <p class="text-80 px-8 my-8">
-                                Are you sure you want to run this command ?
-                            </p>
-                        </div>
-
-                        <div class="bg-30 px-6 py-3 flex">
-                            <div class="flex items-center ml-auto">
-                                <button type="button" @click.prevent="closeModal" class="btn text-80 font-normal h-9 px-3 mr-3 btn-link">Cancel</button>
-
-                                <button @click="runCommand()"
-                                        type="submit"
-                                        class="btn btn-default"
-                                        v-bind:class="commands[commandIndex].type ? ('btn-'+ commands[commandIndex].type) : 'btn-primary'"
-                                >
-                                    <span v-if="!running">Run Command</span>
-                                    <svg v-if="running" viewBox="0 0 120 30" xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="mx-auto block" style="width: 30px;">
-                                        <circle cx="15" cy="15" r="10.9958">
-                                            <animate attributeName="r" from="15" to="15" begin="0s" dur="0.8s" values="15;9;15" calcMode="linear" repeatCount="indefinite"></animate>
-                                            <animate attributeName="fill-opacity" from="1" to="1" begin="0s" dur="0.8s" values="1;.5;1" calcMode="linear" repeatCount="indefinite"></animate>
-                                        </circle>
-                                        <circle cx="60" cy="15" r="13.0042" fill-opacity="0.3">
-                                            <animate attributeName="r" from="9" to="9" begin="0s" dur="0.8s" values="9;15;9" calcMode="linear" repeatCount="indefinite"></animate>
-                                            <animate attributeName="fill-opacity" from="0.5" to="0.5" begin="0s" dur="0.8s" values=".5;1;.5" calcMode="linear" repeatCount="indefinite"></animate>
-                                        </circle>
-                                        <circle cx="105" cy="15" r="10.9958">
-                                            <animate attributeName="r" from="15" to="15" begin="0s" dur="0.8s" values="15;9;15" calcMode="linear" repeatCount="indefinite"></animate>
-                                            <animate attributeName="fill-opacity" from="1" to="1" begin="0s" dur="0.8s" values="1;.5;1" calcMode="linear" repeatCount="indefinite"></animate>
-                                        </circle>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </modal>
-            </transition>
-        </portal>
-
-        <heading class="mb-6">Command Runner</heading>
-
-        <card class="flex flex-col items-center" style="min-height: 300px">
-            <h2 class="text-black text-3xl font-light mt-4">
-                Available commands
-            </h2>
-
-            <div class="flex bg-grey-lighter">
-                <div v-for="group in groups" class="flex-1 text-grey-darker text-center bg-grey-light px-4 py-2 m-2">
-                    <h4 class="text-black text-2xl text-60 font-light mb-6 mt-4">
-                        {{group ? group : 'Unnamed group'}}
-                    </h4>
-                    <button type="button"
-                            v-for="(command, index) in commands"
-                            v-if="command.group===group"
-                            @click="confirm(index)"
-                            class="items-left btn btn-default mb-2"
-                            style="width: 100%;"
-                            v-bind:class="command.type ? ('btn-'+ command.type) : 'btn-primary'"
-                    >
-                        {{index}}
-                    </button>
-                </div>
-            </div>
-
-
-        </card>
-
-        <heading class="mb-6 mt-6">History</heading>
-
+        <heading class="mb-6 mt-6">لیست میکروسرویس ها</heading>
         <card class="mb-6">
             <table class="table w-full">
                 <thead>
                 <tr>
-                    <th scope="col">Command</th>
-                    <th scope="col">Options</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Result</th>
-                    <th scope="col">Duration</th>
-                    <th scope="col" class="table-fit">Happened</th>
+                    <th scope="col">میکروسرویس</th>
+                    <th scope="col">وضعیت</th>
+                    <th scope="col">تعداد خطاها</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="value in history">
-                    <td>{{value.run}}</td>
-                    <td>{{value.options}}</td>
-                    <td><span class="badge" v-bind:class="'badge-'+value.status">{{value.status}}</span></td>
-                    <td>{{value.result}}</td>
-                    <td>{{value.duration}} sec.</td>
-                    <td class="table-fit">{{value.time}}</td>
+                <tr v-for="microservice in microservices">
+                    <td style="text-align: center">{{microservice.name}}</td>
+                    <td style="text-align: center">
+                        <span style="width: 1.5rem; height: 1.5rem" v-if="microservice.status === 200" class="inline-block rounded-full w-2 h-2 mr-1 bg-success"></span>
+                        <span style="width: 1.5rem; height: 1.5rem" v-else class="inline-block rounded-full w-2 h-2 mr-1 bg-danger blink"></span>
+                    </td>
+                    <td style="text-align: center">{{microservice.consumer_logs}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </card>
+
+
+
+        <heading class="mb-6 mt-6">دیتابیس کابران</heading>
+        <card class="mb-6">
+            <table class="table w-full">
+                <thead>
+                <tr>
+                    <th scope="col">میکروسرویس</th>
+                    <th scope="col">تعداد کل رکوردها</th>
+                    <th scope="col">تعداد رکوردهای حدف شده</th>
+                    <th scope="col">آخرین آپدیت</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="microservice in microservices" v-if="microservice.models && typeof microservice.models.user !== 'undefined'">
+                    <td style="text-align: center">{{microservice.name}}</td>
+                    <td style="text-align: center">{{microservice.models.user}}</td>
+                    <td style="text-align: center">{{microservice.models_deleted.user}}</td>
+                    <td style="text-align: center; direction: ltr !important;">{{microservice.models_updated.user}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </card>
+
+
+        <heading class="mb-6 mt-6">دیتابیس ترمینال ها</heading>
+        <card class="mb-6">
+            <table class="table w-full">
+                <thead>
+                <tr>
+                    <th scope="col">میکروسرویس</th>
+                    <th scope="col">تعداد کل رکوردها</th>
+                    <th scope="col">تعداد رکوردهای حدف شده</th>
+                    <th scope="col">آخرین آپدیت</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="microservice in microservices" v-if="microservice.models && typeof microservice.models.terminal !== 'undefined'">
+                    <td style="text-align: center">{{microservice.name}}</td>
+                    <td style="text-align: center">{{microservice.models.terminal}}</td>
+                    <td style="text-align: center">{{microservice.models_deleted.terminal}}</td>
+                    <td style="text-align: center; direction: ltr !important;">{{microservice.models_updated.terminal}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </card>
+
+
+        <heading class="mb-6 mt-6">دیتابیس شماره حساب ها</heading>
+        <card class="mb-6">
+            <table class="table w-full">
+                <thead>
+                <tr>
+                    <th scope="col">میکروسرویس</th>
+                    <th scope="col">تعداد کل رکوردها</th>
+                    <th scope="col">تعداد رکوردهای حدف شده</th>
+                    <th scope="col">آخرین آپدیت</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="microservice in microservices" v-if="microservice.models && typeof microservice.models.iban !== 'undefined'">
+                    <td style="text-align: center">{{microservice.name}}</td>
+                    <td style="text-align: center">{{microservice.models.iban}}</td>
+                    <td style="text-align: center">{{microservice.models_deleted.iban}}</td>
+                    <td style="text-align: center; direction: ltr !important;">{{microservice.models_updated.iban}}</td>
                 </tr>
                 </tbody>
             </table>
@@ -109,45 +99,53 @@
     export default {
         data() {
             return {
-                modalOpen: false,
-                running: false,
-                commandIndex: null,
-                groups: [],
-                commands: {},
+                microservices: {},
                 history: {}
             }
         },
         mounted() {
-            this.getCommands();
-            this.getHistory();
+            this.getMicroservices();
+            window.setInterval(() => {
+                this.getStatus();
+            }, 3000)
         },
         methods: {
-            getHistory() {
-                Nova.request().get('/nova-vendor/guratr/command-runner/history/')
-                    .then(response => {
-                        this.history = response.data;
-                    });
-            },
-            getCommands() {
-                Nova.request().get('/nova-vendor/guratr/command-runner/commands/')
-                    .then(response => {
-                        this.groups = [];
-                        for (let command in response.data) {
-                            if (response.data.hasOwnProperty(command)) {
-                                let group = response.data[command].group;
-                                if (this.groups.indexOf(group) < 0) {
-                                    this.groups.push(group);
-                                }
+            getStatus() {
+                this.microservices.forEach(microservice => {
+                    Nova.request().get('/nova-vendor/milyoona/microservice-monitor/microservices/ml_auth/status')
+                        .then(response => {
+                            microservice['status'] = response.status
+                            if (response.status === 200) {
+                                microservice['consumer_logs'] = response.data.consumer_logs
+                                microservice['models'] = response.data.models
+                                microservice['models_updated'] = response.data.models_updated
+                                microservice['models_deleted'] = response.data.models_deleted
+                            } else {
+                                microservice['consumer_logs'] = '--'
+                                microservice['models'] = '--'
+                                microservice['models_updated'] = '--'
+                                microservice['models_deleted'] = '--'
                             }
-                        }
-                        console.log(this.groups);
+                        })
+                        .catch(error => {
+                            microservice['status'] = 500
+                            microservice['consumer_logs'] = '--'
+                            microservice['models'] = '--'
+                            microservice['models_updated'] = '--'
+                            microservice['models_deleted'] = '--'
+                        })
 
-                        this.commands = response.data;
+                })
+            },
+            getMicroservices() {
+                Nova.request().get('/nova-vendor/milyoona/microservice-monitor/microservices/')
+                    .then(response => {
+                        this.microservices = response.data;
                     });
             },
             runCommand() {
                 this.running = true;
-                Nova.request().post('/nova-vendor/guratr/command-runner/commands/' + this.commandIndex + '/run')
+                Nova.request().post('/nova-vendor/milyoona/microservice-monitor/microservices/' + this.commandIndex + '/run')
                     .then(response => {
                         this.$toasted.show(response.data.result, {type: response.data.status ? 'success' : 'error'});
                         this.running = false;
@@ -400,5 +398,20 @@
     .badge-error {
         color: #fff;
         background-color: #dc3545;
+    }
+
+    .blink {
+        animation: blink-animation 1s steps(5, start) infinite;
+        -webkit-animation: blink-animation 1s steps(5, start) infinite;
+    }
+    @keyframes blink-animation {
+        to {
+            visibility: hidden;
+        }
+    }
+    @-webkit-keyframes blink-animation {
+        to {
+            visibility: hidden;
+        }
     }
 </style>

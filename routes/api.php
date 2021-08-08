@@ -1,7 +1,7 @@
 <?php
 
 use Milyoona\MicroserviceMonitor\Http\Controllers\HistoryController;
-use Milyoona\MicroserviceMonitor\Http\Controllers\CommandsController;
+use Milyoona\MicroserviceMonitor\Http\Controllers\MicroserviceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,8 +15,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/commands', CommandsController::class . '@index');
-Route::post('/commands/{index}/run', CommandsController::class . '@run');
+Route::get('/microservices', MicroserviceController::class . '@index');
+Route::get('/microservices/{microservice}/status', MicroserviceController::class . '@microserviceStatus');
 
 Route::get('/history', HistoryController::class . '@index');
 

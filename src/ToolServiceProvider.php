@@ -6,7 +6,7 @@ use Laravel\Nova\Nova;
 use Laravel\Nova\Events\ServingNova;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Guratr\CommandRunner\Http\Middleware\Authorize;
+use Milyoona\MicroserviceMonitor\Http\Middleware\Authorize;
 
 class ToolServiceProvider extends ServiceProvider
 {
@@ -21,7 +21,7 @@ class ToolServiceProvider extends ServiceProvider
             __DIR__.'/../config/nova-command-runner.php' => config_path('nova-command-runner.php'),
         ], 'config');
 
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'command-runner');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'microservice-monitor');
 
         $this->app->booted(function () {
             $this->routes();
@@ -44,7 +44,7 @@ class ToolServiceProvider extends ServiceProvider
         }
 
         Route::middleware(['nova', Authorize::class])
-                ->prefix('nova-vendor/guratr/command-runner')
+                ->prefix('nova-vendor/milyoona/microservice-monitor')
                 ->group(__DIR__.'/../routes/api.php');
     }
 

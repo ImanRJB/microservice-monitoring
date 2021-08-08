@@ -1,8 +1,8 @@
 <?php
 
-namespace Guratr\CommandRunner\Http\Middleware;
+namespace Milyoona\MicroserviceMonitor\Http\Middleware;
 
-use Guratr\CommandRunner\CommandRunner;
+use Milyoona\MicroserviceMonitor\MicroserviceMonitor;
 
 class Authorize
 {
@@ -15,6 +15,6 @@ class Authorize
      */
     public function handle($request, $next)
     {
-        return resolve(CommandRunner::class)->authorize($request) ? $next($request) : abort(403);
+        return resolve(MicroserviceMonitor::class)->authorize($request) ? $next($request) : abort(403);
     }
 }

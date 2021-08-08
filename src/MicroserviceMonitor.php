@@ -5,7 +5,7 @@ namespace Milyoona\MicroserviceMonitor;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Tool;
 
-class CommandRunner extends Tool
+class MicroserviceMonitor extends Tool
 {
     /**
      * Perform any tasks that need to happen when the tool is booted.
@@ -14,8 +14,8 @@ class CommandRunner extends Tool
      */
     public function boot()
     {
-        Nova::script('command-runner', __DIR__ . '/../dist/js/tool.js');
-        Nova::style('command-runner', __DIR__ . '/../dist/css/tool.css');
+        Nova::script('microservice-monitor', __DIR__ . '/../dist/js/tool.js');
+        Nova::style('microservice-monitor', __DIR__ . '/../dist/css/tool.css');
     }
 
     /**
@@ -25,6 +25,6 @@ class CommandRunner extends Tool
      */
     public function renderNavigation()
     {
-        return view('command-runner::navigation');
+        return view('microservice-monitor::navigation');
     }
 }
