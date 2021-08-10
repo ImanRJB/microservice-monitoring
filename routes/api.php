@@ -1,6 +1,5 @@
 <?php
 
-use Milyoona\MicroserviceMonitor\Http\Controllers\HistoryController;
 use Milyoona\MicroserviceMonitor\Http\Controllers\MicroserviceController;
 use Illuminate\Support\Facades\Route;
 
