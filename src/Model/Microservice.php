@@ -9,30 +9,11 @@ class Microservice extends Model
 {
     use HasFactory;
 
-    protected $appends = ['status', 'consumer_logs', 'models', 'models_updated', 'models_deleted'];
+    protected $fillable = ['all_models', 'deleted_models', 'updated_models', 'consumer_logs', 'status'];
 
-    public function getStatusAttribute()
-    {
-        return 500;
-    }
-
-    public function getConsumerLogsAttribute()
-    {
-        return '--';
-    }
-
-    public function getModelsAttribute()
-    {
-        return '--';
-    }
-
-    public function getModelsUpdatedAttribute()
-    {
-        return '--';
-    }
-
-    public function getModelsDeletedAttribute()
-    {
-        return '--';
-    }
+    protected $casts = [
+        'all_models' => 'json',
+        'deleted_models' => 'json',
+        'updated_models' => 'json',
+    ];
 }

@@ -689,52 +689,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {
             microservices: {},
-            history: {}
+            models: {}
         };
     },
     mounted: function mounted() {
@@ -742,62 +702,45 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
         this.getMicroservices();
         window.setInterval(function () {
-            _this.getStatus();
+            _this.getMicroservices();
         }, 3000);
     },
 
     methods: {
-        getStatus: function getStatus() {
-            this.microservices.forEach(function (microservice) {
-                Nova.request().get('/nova-vendor/milyoona/microservice-monitor/microservices/ml_auth/status').then(function (response) {
-                    microservice['status'] = response.status;
-                    if (response.status === 200) {
-                        microservice['consumer_logs'] = response.data.consumer_logs;
-                        microservice['models'] = response.data.models;
-                        microservice['models_updated'] = response.data.models_updated;
-                        microservice['models_deleted'] = response.data.models_deleted;
-                    } else {
-                        microservice['consumer_logs'] = '--';
-                        microservice['models'] = '--';
-                        microservice['models_updated'] = '--';
-                        microservice['models_deleted'] = '--';
-                    }
-                }).catch(function (error) {
-                    microservice['status'] = 500;
-                    microservice['consumer_logs'] = '--';
-                    microservice['models'] = '--';
-                    microservice['models_updated'] = '--';
-                    microservice['models_deleted'] = '--';
-                });
-            });
-        },
+        // getStatus() {
+        //     this.microservices.forEach(microservice => {
+        //         Nova.request().get('/nova-vendor/milyoona/microservice-monitor/microservices/ml_auth/status')
+        //             .then(response => {
+        //                 microservice['status'] = response.status
+        //                 if (response.status === 200) {
+        //                     microservice['consumer_logs'] = response.data.consumer_logs
+        //                     microservice['models'] = response.data.models
+        //                     microservice['models_updated'] = response.data.models_updated
+        //                     microservice['models_deleted'] = response.data.models_deleted
+        //                 } else {
+        //                     microservice['consumer_logs'] = '--'
+        //                     microservice['models'] = '--'
+        //                     microservice['models_updated'] = '--'
+        //                     microservice['models_deleted'] = '--'
+        //                 }
+        //             })
+        //             .catch(error => {
+        //                 microservice['status'] = 500
+        //                 microservice['consumer_logs'] = '--'
+        //                 microservice['models'] = '--'
+        //                 microservice['models_updated'] = '--'
+        //                 microservice['models_deleted'] = '--'
+        //             })
+        //
+        //     })
+        // },
         getMicroservices: function getMicroservices() {
             var _this2 = this;
 
             Nova.request().get('/nova-vendor/milyoona/microservice-monitor/microservices/').then(function (response) {
-                _this2.microservices = response.data;
+                _this2.microservices = response.data.microservices;
+                _this2.models = response.data.models;
             });
-        },
-        runCommand: function runCommand() {
-            var _this3 = this;
-
-            this.running = true;
-            Nova.request().post('/nova-vendor/milyoona/microservice-monitor/microservices/' + this.commandIndex + '/run').then(function (response) {
-                _this3.$toasted.show(response.data.result, { type: response.data.status ? 'success' : 'error' });
-                _this3.running = false;
-                _this3.getHistory();
-                _this3.closeModal();
-            });
-        },
-        confirm: function confirm(index) {
-            this.openModal(index);
-        },
-        openModal: function openModal(index) {
-            this.commandIndex = index;
-            this.modalOpen = true;
-        },
-        closeModal: function closeModal() {
-            this.modalOpen = false;
         }
     }
 });
@@ -838,7 +781,7 @@ var render = function() {
                 ]),
                 _vm._v(" "),
                 _c("td", { staticStyle: { "text-align": "center" } }, [
-                  microservice.status === 200
+                  microservice.status
                     ? _c("span", {
                         staticClass:
                           "inline-block rounded-full w-2 h-2 mr-1 bg-success",
@@ -861,179 +804,108 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
-      _c("heading", { staticClass: "mb-6 mt-6" }, [_vm._v("دیتابیس کابران")]),
-      _vm._v(" "),
-      _c("card", { staticClass: "mb-6" }, [
-        _c("table", { staticClass: "table w-full" }, [
-          _c("thead", [
-            _c("tr", [
-              _c("th", { attrs: { scope: "col" } }, [_vm._v("میکروسرویس")]),
-              _vm._v(" "),
-              _c("th", { attrs: { scope: "col" } }, [
-                _vm._v("تعداد کل رکوردها")
-              ]),
-              _vm._v(" "),
-              _c("th", { attrs: { scope: "col" } }, [
-                _vm._v("تعداد رکوردهای حدف شده")
-              ]),
-              _vm._v(" "),
-              _c("th", { attrs: { scope: "col" } }, [_vm._v("آخرین آپدیت")])
-            ])
-          ]),
-          _vm._v(" "),
-          _c(
-            "tbody",
-            _vm._l(_vm.microservices, function(microservice) {
-              return microservice.models &&
-                typeof microservice.models.user !== "undefined"
-                ? _c("tr", [
-                    _c("td", { staticStyle: { "text-align": "center" } }, [
-                      _vm._v(_vm._s(microservice.name))
+      _vm._l(_vm.models, function(model) {
+        return _c(
+          "div",
+          [
+            _c("heading", { staticClass: "mb-6 mt-6" }, [
+              _vm._v("دیتابیس " + _vm._s(model))
+            ]),
+            _vm._v(" "),
+            _c("card", { staticClass: "mb-6" }, [
+              _c("table", { staticClass: "table w-full" }, [
+                _c("thead", [
+                  _c("tr", [
+                    _c("th", { attrs: { scope: "col" } }, [
+                      _vm._v("میکروسرویس")
                     ]),
                     _vm._v(" "),
-                    _c("td", { staticStyle: { "text-align": "center" } }, [
-                      _vm._v(_vm._s(microservice.models.user))
+                    _c("th", { attrs: { scope: "col" } }, [
+                      _vm._v("تعداد کل رکوردها")
                     ]),
                     _vm._v(" "),
-                    _c("td", { staticStyle: { "text-align": "center" } }, [
-                      _vm._v(_vm._s(microservice.models_deleted.user))
+                    _c("th", { attrs: { scope: "col" } }, [
+                      _vm._v("تعداد رکوردهای حدف شده")
                     ]),
                     _vm._v(" "),
-                    _c(
-                      "td",
-                      {
-                        staticStyle: {
-                          "text-align": "center",
-                          direction: "ltr !important"
-                        }
-                      },
-                      [_vm._v(_vm._s(microservice.models_updated.user))]
-                    )
+                    _c("th", { attrs: { scope: "col" } }, [
+                      _vm._v("آخرین آپدیت")
+                    ])
                   ])
-                : _vm._e()
-            }),
-            0
-          )
-        ])
-      ]),
-      _vm._v(" "),
-      _c("heading", { staticClass: "mb-6 mt-6" }, [
-        _vm._v("دیتابیس ترمینال ها")
-      ]),
-      _vm._v(" "),
-      _c("card", { staticClass: "mb-6" }, [
-        _c("table", { staticClass: "table w-full" }, [
-          _c("thead", [
-            _c("tr", [
-              _c("th", { attrs: { scope: "col" } }, [_vm._v("میکروسرویس")]),
-              _vm._v(" "),
-              _c("th", { attrs: { scope: "col" } }, [
-                _vm._v("تعداد کل رکوردها")
-              ]),
-              _vm._v(" "),
-              _c("th", { attrs: { scope: "col" } }, [
-                _vm._v("تعداد رکوردهای حدف شده")
-              ]),
-              _vm._v(" "),
-              _c("th", { attrs: { scope: "col" } }, [_vm._v("آخرین آپدیت")])
+                ]),
+                _vm._v(" "),
+                _c(
+                  "tbody",
+                  _vm._l(_vm.microservices, function(microservice) {
+                    return microservice.all_models &&
+                      typeof microservice.all_models[model.toLowerCase()] !==
+                        "undefined"
+                      ? _c("tr", [
+                          _c(
+                            "td",
+                            { staticStyle: { "text-align": "center" } },
+                            [_vm._v(_vm._s(microservice.name))]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "td",
+                            { staticStyle: { "text-align": "center" } },
+                            [
+                              _vm._v(
+                                _vm._s(
+                                  microservice.all_models[model.toLowerCase()]
+                                )
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "td",
+                            { staticStyle: { "text-align": "center" } },
+                            [
+                              _vm._v(
+                                _vm._s(
+                                  microservice.deleted_models[
+                                    model.toLowerCase()
+                                  ]
+                                )
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "td",
+                            {
+                              staticStyle: {
+                                "text-align": "center",
+                                direction: "ltr !important"
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(
+                                    microservice.updated_models[
+                                      model.toLowerCase()
+                                    ]
+                                  ) +
+                                  "\n                    "
+                              )
+                            ]
+                          )
+                        ])
+                      : _vm._e()
+                  }),
+                  0
+                )
+              ])
             ])
-          ]),
-          _vm._v(" "),
-          _c(
-            "tbody",
-            _vm._l(_vm.microservices, function(microservice) {
-              return microservice.models &&
-                typeof microservice.models.terminal !== "undefined"
-                ? _c("tr", [
-                    _c("td", { staticStyle: { "text-align": "center" } }, [
-                      _vm._v(_vm._s(microservice.name))
-                    ]),
-                    _vm._v(" "),
-                    _c("td", { staticStyle: { "text-align": "center" } }, [
-                      _vm._v(_vm._s(microservice.models.terminal))
-                    ]),
-                    _vm._v(" "),
-                    _c("td", { staticStyle: { "text-align": "center" } }, [
-                      _vm._v(_vm._s(microservice.models_deleted.terminal))
-                    ]),
-                    _vm._v(" "),
-                    _c(
-                      "td",
-                      {
-                        staticStyle: {
-                          "text-align": "center",
-                          direction: "ltr !important"
-                        }
-                      },
-                      [_vm._v(_vm._s(microservice.models_updated.terminal))]
-                    )
-                  ])
-                : _vm._e()
-            }),
-            0
-          )
-        ])
-      ]),
-      _vm._v(" "),
-      _c("heading", { staticClass: "mb-6 mt-6" }, [
-        _vm._v("دیتابیس شماره حساب ها")
-      ]),
-      _vm._v(" "),
-      _c("card", { staticClass: "mb-6" }, [
-        _c("table", { staticClass: "table w-full" }, [
-          _c("thead", [
-            _c("tr", [
-              _c("th", { attrs: { scope: "col" } }, [_vm._v("میکروسرویس")]),
-              _vm._v(" "),
-              _c("th", { attrs: { scope: "col" } }, [
-                _vm._v("تعداد کل رکوردها")
-              ]),
-              _vm._v(" "),
-              _c("th", { attrs: { scope: "col" } }, [
-                _vm._v("تعداد رکوردهای حدف شده")
-              ]),
-              _vm._v(" "),
-              _c("th", { attrs: { scope: "col" } }, [_vm._v("آخرین آپدیت")])
-            ])
-          ]),
-          _vm._v(" "),
-          _c(
-            "tbody",
-            _vm._l(_vm.microservices, function(microservice) {
-              return microservice.models &&
-                typeof microservice.models.iban !== "undefined"
-                ? _c("tr", [
-                    _c("td", { staticStyle: { "text-align": "center" } }, [
-                      _vm._v(_vm._s(microservice.name))
-                    ]),
-                    _vm._v(" "),
-                    _c("td", { staticStyle: { "text-align": "center" } }, [
-                      _vm._v(_vm._s(microservice.models.iban))
-                    ]),
-                    _vm._v(" "),
-                    _c("td", { staticStyle: { "text-align": "center" } }, [
-                      _vm._v(_vm._s(microservice.models_deleted.iban))
-                    ]),
-                    _vm._v(" "),
-                    _c(
-                      "td",
-                      {
-                        staticStyle: {
-                          "text-align": "center",
-                          direction: "ltr !important"
-                        }
-                      },
-                      [_vm._v(_vm._s(microservice.models_updated.iban))]
-                    )
-                  ])
-                : _vm._e()
-            }),
-            0
-          )
-        ])
-      ])
+          ],
+          1
+        )
+      })
     ],
-    1
+    2
   )
 }
 var staticRenderFns = []
