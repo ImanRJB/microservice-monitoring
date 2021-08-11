@@ -634,6 +634,15 @@ module.exports = function normalizeComponent (
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_apexcharts__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_apexcharts___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue_apexcharts__);
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -704,10 +713,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             microservices: {},
             models: {},
-            errorChart: null,
-            charts: [],
             errorChartSeries: [{
-                name: "تعداد خطا",
+                name: "Errors",
                 data: [10, 41, 35, 51, 49, 62, 69, 91, 148, 82, 10, 41, 35, 51, 49, 62, 69, 91, 148, 82]
             }],
             errorChartOptions: {
@@ -748,7 +755,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     tickPlacement: 'on',
                     categories: []
                 }
-            }
+            },
+            modelChartOptions: [],
+            modelSeries: []
+
         };
     },
     mounted: function mounted() {
@@ -756,7 +766,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
         this.getMicroservices();
         window.setInterval(function () {
-            _this.getMicroservices();
+            _this.updateCharts();
         }, 3000);
     },
 
@@ -764,45 +774,202 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         capitalizeFirstLetter: function capitalizeFirstLetter(string) {
             return string.charAt(0).toUpperCase() + string.slice(1);
         },
+        updateModelCharts: function updateModelCharts() {
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = Object.entries(this.models)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var _ref = _step.value;
+
+                    var _ref2 = _slicedToArray(_ref, 2);
+
+                    var key = _ref2[0];
+                    var value = _ref2[1];
+
+
+                    var allModels = [];
+                    var updatedModels = [];
+                    var deletedModels = [];
+
+                    for (var i = 0; i < this.microservices.length; i++) {
+                        if (this.microservices[i]['all_models'] && typeof this.microservices[i]['all_models'][value.toLowerCase()] !== 'undefined') {
+                            allModels.push(this.microservices[i]['all_models'][value.toLowerCase()]);
+                            updatedModels.push(this.microservices[i]['updated_models'][value.toLowerCase()]);
+                            deletedModels.push(this.microservices[i]['deleted_models'][value.toLowerCase()]);
+                        }
+                    }
+
+                    this.modelSeries[value] = [{
+                        name: "All",
+                        data: allModels
+                    }, {
+                        name: "Update",
+                        data: updatedModels
+                    }, {
+                        name: "Delete",
+                        data: deletedModels
+                    }];
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+        },
         getChartsData: function getChartsData() {
-            // for (const [key, value] of Object.entries(this.models)) {
-            //
-            //     let chart = am4core.create('chart' + value, am4charts.XYChart)
-            //     this.charts[value] = chart
-            //
-            //     let data = [];
-            //     for (var i = 0; i < this.microservices.length; i++) {
-            //         if (this.microservices[i]['all_models'] && typeof this.microservices[i]['all_models'][value.toLowerCase()] !== 'undefined') {
-            //             data.push({ category: this.microservices[i]['name'].replace('ml_', ''), value: this.microservices[i]['all_models'][value.toLowerCase()] });
-            //         }
-            //     }
-            //     chart.data = data;
-            //
-            //     chart.padding(40, 40, 40, 40);
-            //
-            //     var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-            //     categoryAxis.renderer.grid.template.location = 0;
-            //     categoryAxis.dataFields.category = "category";
-            //     categoryAxis.renderer.labels.template.rotation = -90;
-            //     categoryAxis.renderer.labels.template.paddingTop = -12;
-            //     categoryAxis.renderer.minGridDistance = 20;
-            //
-            //     var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-            //
-            //     var series = chart.series.push(new am4charts.LineSeries());
-            //     series.dataFields.categoryX = "category";
-            //     series.dataFields.valueY = "value";
-            //     series.tooltipText = "{valueY.value}";
-            //     series.tensionX = 0.8;
-            //     series.strokeWidth = 3;
-            //
-            //     var bullet = series.bullets.create(am4charts.CircleBullet);
-            //     bullet.isDynamic = true;
-            //     bullet.circle.fill = am4core.color("#fff");
-            //     bullet.strokeWidth = 3;
-            //
-            //     chart.cursor = new am4charts.XYCursor();
-            // }
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
+
+            try {
+                for (var _iterator2 = Object.entries(this.models)[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var _ref3 = _step2.value;
+
+                    var _ref4 = _slicedToArray(_ref3, 2);
+
+                    var key = _ref4[0];
+                    var value = _ref4[1];
+
+
+                    var category = [];
+                    var allModels = [];
+                    var updatedModels = [];
+                    var deletedModels = [];
+
+                    for (var i = 0; i < this.microservices.length; i++) {
+                        if (this.microservices[i]['all_models'] && typeof this.microservices[i]['all_models'][value.toLowerCase()] !== 'undefined') {
+                            category.push(this.capitalizeFirstLetter(this.microservices[i]['name'].replace('ml_', '')));
+                            allModels.push(this.microservices[i]['all_models'][value.toLowerCase()]);
+                            updatedModels.push(this.microservices[i]['updated_models'][value.toLowerCase()]);
+                            deletedModels.push(this.microservices[i]['deleted_models'][value.toLowerCase()]);
+                        }
+                    }
+
+                    this.modelSeries[value] = [{
+                        name: "All",
+                        data: allModels
+                    }, {
+                        name: "Update",
+                        data: updatedModels
+                    }, {
+                        name: "Delete",
+                        data: deletedModels
+                    }];
+
+                    this.modelChartOptions[value] = {
+                        chart: {
+                            height: 350,
+                            type: 'line',
+                            dropShadow: {
+                                enabled: true,
+                                color: '#000',
+                                top: 18,
+                                left: 7,
+                                blur: 10,
+                                opacity: 0.2
+                            },
+                            toolbar: {
+                                show: false
+                            }
+                        },
+                        colors: ['#77B6EA', '#545454', '#ee0f0f'],
+                        dataLabels: {
+                            enabled: true
+                        },
+                        stroke: {
+                            curve: 'smooth'
+                        },
+                        title: {
+                            text: value + ' \u062F\u06CC\u062A\u0627\u0628\u06CC\u0633',
+                            align: 'right'
+                        },
+                        grid: {
+                            borderColor: '#e7e7e7',
+                            row: {
+                                colors: ['#f3f3f3', 'transparent'],
+                                opacity: 0.5
+                            }
+                        },
+                        markers: {
+                            size: 1
+                        },
+                        xaxis: {
+                            categories: category,
+                            title: {
+                                text: 'Month'
+                            }
+                        },
+                        legend: {
+                            position: 'top',
+                            horizontalAlign: 'left',
+                            floating: true,
+                            offsetY: -25,
+                            offsetX: -5
+                        }
+                    };
+
+                    //
+                    //     let chart = am4core.create('chart' + value, am4charts.XYChart)
+                    //     this.charts[value] = chart
+                    //
+                    //     let data = [];
+                    //     for (var i = 0; i < this.microservices.length; i++) {
+                    //         if (this.microservices[i]['all_models'] && typeof this.microservices[i]['all_models'][value.toLowerCase()] !== 'undefined') {
+                    //             data.push({ category: this.microservices[i]['name'].replace('ml_', ''), value: this.microservices[i]['all_models'][value.toLowerCase()] });
+                    //         }
+                    //     }
+                    //     chart.data = data;
+                    //
+                    //     chart.padding(40, 40, 40, 40);
+                    //
+                    //     var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+                    //     categoryAxis.renderer.grid.template.location = 0;
+                    //     categoryAxis.dataFields.category = "category";
+                    //     categoryAxis.renderer.labels.template.rotation = -90;
+                    //     categoryAxis.renderer.labels.template.paddingTop = -12;
+                    //     categoryAxis.renderer.minGridDistance = 20;
+                    //
+                    //     var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+                    //
+                    //     var series = chart.series.push(new am4charts.LineSeries());
+                    //     series.dataFields.categoryX = "category";
+                    //     series.dataFields.valueY = "value";
+                    //     series.tooltipText = "{valueY.value}";
+                    //     series.tensionX = 0.8;
+                    //     series.strokeWidth = 3;
+                    //
+                    //     var bullet = series.bullets.create(am4charts.CircleBullet);
+                    //     bullet.isDynamic = true;
+                    //     bullet.circle.fill = am4core.color("#fff");
+                    //     bullet.strokeWidth = 3;
+                    //
+                    //     chart.cursor = new am4charts.XYCursor();
+                }
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
+                    }
+                }
+            }
         },
         getErrorsChart: function getErrorsChart() {
             var microservices = [];
@@ -834,6 +1001,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 _this2.models = response.data.models;
 
                 _this2.getErrorsChart();
+                _this2.getChartsData();
+            });
+        },
+        updateCharts: function updateCharts() {
+            var _this3 = this;
+
+            Nova.request().get('/nova-vendor/milyoona/microservice-monitor/microservices/').then(function (response) {
+                _this3.microservices = response.data.microservices;
+                _this3.models = response.data.models;
+
+                _this3.getErrorsChart();
+                _this3.updateModelCharts();
             });
         }
     }
@@ -1178,7 +1357,6 @@ var render = function() {
           [
             _c("apexchart", {
               attrs: {
-                id: "charttt",
                 type: "line",
                 height: "350",
                 options: _vm.errorChartOptions,
@@ -1188,9 +1366,29 @@ var render = function() {
           ],
           1
         )
-      ])
+      ]),
+      _vm._v(" "),
+      _vm._l(_vm.models, function(model) {
+        return _c("card", { key: "model", staticClass: "mb-6" }, [
+          _c(
+            "div",
+            { staticClass: "chart", attrs: { id: "chart" } },
+            [
+              _c("apexchart", {
+                attrs: {
+                  type: "line",
+                  height: "350",
+                  options: _vm.modelChartOptions[model],
+                  series: _vm.modelSeries[model]
+                }
+              })
+            ],
+            1
+          )
+        ])
+      })
     ],
-    1
+    2
   )
 }
 var staticRenderFns = []

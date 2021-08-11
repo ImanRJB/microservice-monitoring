@@ -13,7 +13,14 @@
 <!--        <div class="title mb-6 mt-6">خطاهای میکروسرویس ها</div>-->
         <card class="mb-6">
             <div class="chart" id="chart">
-                <apexchart id="charttt" type="line" height="350" :options="errorChartOptions" :series="errorChartSeries"></apexchart>
+                <apexchart type="line" height="350" :options="errorChartOptions" :series="errorChartSeries"></apexchart>
+            </div>
+        </card>
+
+
+        <card v-for="model in models" class="mb-6" key="model">
+            <div class="chart" id="chart">
+                <apexchart type="line" height="350" :options="modelChartOptions[model]" :series="modelSeries[model]"></apexchart>
             </div>
         </card>
 
@@ -68,10 +75,8 @@ export default {
         return {
             microservices: {},
             models: {},
-            errorChart: null,
-            charts: [],
             errorChartSeries: [{
-                name: "تعداد خطا",
+                name: "Errors",
                 data: [10, 41, 35, 51, 49, 62, 69, 91, 148, 82, 10, 41, 35, 51, 49, 62, 69, 91, 148, 82]
             }],
             errorChartOptions: {
@@ -113,20 +118,138 @@ export default {
                     categories: [],
                 }
             },
+            modelChartOptions: [],
+            modelSeries: [],
+
         }
     },
     mounted() {
         this.getMicroservices();
         window.setInterval(() => {
-            this.getMicroservices();
+            this.updateCharts();
         }, 3000)
     },
     methods: {
         capitalizeFirstLetter(string) {
             return string.charAt(0).toUpperCase() + string.slice(1);
         },
+        updateModelCharts() {
+            for (const [key, value] of Object.entries(this.models)) {
+
+                let allModels = [];
+                let updatedModels = [];
+                let deletedModels = [];
+
+                for (var i = 0; i < this.microservices.length; i++) {
+                    if (this.microservices[i]['all_models'] && typeof this.microservices[i]['all_models'][value.toLowerCase()] !== 'undefined') {
+                        allModels.push(this.microservices[i]['all_models'][value.toLowerCase()])
+                        updatedModels.push(this.microservices[i]['updated_models'][value.toLowerCase()])
+                        deletedModels.push(this.microservices[i]['deleted_models'][value.toLowerCase()])
+                    }
+                }
+
+                this.modelSeries[value] = [
+                    {
+                        name: "All",
+                        data: allModels
+                    },
+                    {
+                        name: "Update",
+                        data: updatedModels
+                    },
+                    {
+                        name: "Delete",
+                        data: deletedModels
+                    }
+                ]
+
+            }
+        },
         getChartsData() {
-            // for (const [key, value] of Object.entries(this.models)) {
+            for (const [key, value] of Object.entries(this.models)) {
+
+                let category = [];
+                let allModels = [];
+                let updatedModels = [];
+                let deletedModels = [];
+
+                for (var i = 0; i < this.microservices.length; i++) {
+                    if (this.microservices[i]['all_models'] && typeof this.microservices[i]['all_models'][value.toLowerCase()] !== 'undefined') {
+                        category.push(this.capitalizeFirstLetter(this.microservices[i]['name'].replace('ml_', '')));
+                        allModels.push(this.microservices[i]['all_models'][value.toLowerCase()])
+                        updatedModels.push(this.microservices[i]['updated_models'][value.toLowerCase()])
+                        deletedModels.push(this.microservices[i]['deleted_models'][value.toLowerCase()])
+                    }
+                }
+
+                this.modelSeries[value] = [
+                    {
+                        name: "All",
+                        data: allModels
+                    },
+                    {
+                        name: "Update",
+                        data: updatedModels
+                    },
+                    {
+                        name: "Delete",
+                        data: deletedModels
+                    }
+                ]
+
+                this.modelChartOptions[value] = {
+                    chart: {
+                        height: 350,
+                        type: 'line',
+                        dropShadow: {
+                            enabled: true,
+                            color: '#000',
+                            top: 18,
+                            left: 7,
+                            blur: 10,
+                            opacity: 0.2
+                        },
+                        toolbar: {
+                            show: false
+                        }
+                    },
+                    colors: ['#77B6EA', '#545454', '#ee0f0f'],
+                    dataLabels: {
+                        enabled: true,
+                    },
+                    stroke: {
+                        curve: 'smooth'
+                    },
+                    title: {
+                        text: `${value} دیتابیس`,
+                        align: 'right'
+                    },
+                    grid: {
+                        borderColor: '#e7e7e7',
+                        row: {
+                            colors: ['#f3f3f3', 'transparent'],
+                            opacity: 0.5
+                        },
+                    },
+                    markers: {
+                        size: 1
+                    },
+                    xaxis: {
+                        categories: category,
+                        title: {
+                            text: 'Month'
+                        }
+                    },
+                    legend: {
+                        position: 'top',
+                        horizontalAlign: 'left',
+                        floating: true,
+                        offsetY: -25,
+                        offsetX: -5
+                    }
+                };
+
+
             //
             //     let chart = am4core.create('chart' + value, am4charts.XYChart)
             //     this.charts[value] = chart
@@ -163,7 +286,7 @@ export default {
             //     bullet.strokeWidth = 3;
             //
             //     chart.cursor = new am4charts.XYCursor();
-            // }
+            }
         },
         getErrorsChart() {
             var microservices = [];
@@ -194,6 +317,17 @@ export default {
                     this.models = response.data.models;
 
                     this.getErrorsChart();
+                    this.getChartsData();
+                });
+        },
+        updateCharts() {
+            Nova.request().get('/nova-vendor/milyoona/microservice-monitor/microservices/')
+                .then(response => {
+                    this.microservices = response.data.microservices;
+                    this.models = response.data.models;
+
+                    this.getErrorsChart();
+                    this.updateModelCharts();
                 });
         }
     },
