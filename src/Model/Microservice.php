@@ -9,7 +9,7 @@ class Microservice extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['all_models', 'deleted_models', 'updated_models', 'consumer_logs', 'status'];
+    protected $fillable = ['all_models', 'deleted_models', 'updated_models', 'consumer_logs', 'consumer_error_logs', 'status'];
 
     protected $casts = [
         'all_models' => 'json',

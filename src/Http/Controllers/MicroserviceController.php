@@ -25,6 +25,7 @@ class MicroserviceController
                     'deleted_models' => $response->deleted_models,
                     'updated_models' => $response->updated_models,
                     'consumer_logs' => $response->consumer_logs,
+                    'consumer_error_logs' => $response->consumer_error_logs,
                     'status' => 1
                 ]);
             } catch (\Exception $exception) {
