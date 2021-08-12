@@ -36,8 +36,6 @@ class MicroserviceController
             }
         }
 
-//        return Microservice::whereJsonContains('base_models','user')->first();
-
         foreach ($microservices as $microservice) {
             $errors = [];
             foreach ($microservice->all_models as $name => $value) {
@@ -67,13 +65,8 @@ class MicroserviceController
                 }
             }
 
-
-
             $microservice->update(['model_errors' => $errors]);
         }
-
-
-
 
         return response(['microservices' => $microservices, 'models' => $models], 200);
     }
