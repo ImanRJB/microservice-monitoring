@@ -102,7 +102,7 @@ export default {
             models: {},
             errorChartSeries: [{
                 name: "Errors",
-                data: [10, 41, 35, 51, 49, 62, 69, 91, 148, 82, 10, 41, 35, 51, 49, 62, 69, 91, 148, 82]
+                data: []
             }],
             errorChartOptions: {
                 chart: {
@@ -183,7 +183,6 @@ export default {
                 .then(response => {
                     this.microservices = response.data.microservices;
                     this.models = response.data.models;
-                    // this.$toasted.show("Yay, it worked!", {type: "success"});
                     this.getErrorsChart();
                 });
         }
