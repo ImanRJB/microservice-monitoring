@@ -18,11 +18,13 @@ class CreateMicroservicesTable extends Migration
             $table->string('name');
             $table->string('hostname');
             $table->string('port');
+            $table->json('base_models')->nullable();
             $table->json('all_models')->nullable();
             $table->json('deleted_models')->nullable();
             $table->json('updated_models')->nullable();
-            $table->string('consumer_logs')->nullable();
-            $table->string('consumer_error_logs')->nullable();
+            $table->json('model_errors')->nullable();
+            $table->string('consumer_logs')->default(0);
+            $table->string('consumer_error_logs')->default(0);
             $table->boolean('status')->nullable();
             $table->timestamps();
         });

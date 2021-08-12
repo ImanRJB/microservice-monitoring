@@ -21,6 +21,7 @@ class MicroserviceController
                 $response = json_decode($response->getBody());
 
                 $microservice->update([
+                    'base_models' => $response->base_models,
                     'all_models' => $response->all_models,
                     'deleted_models' => $response->deleted_models,
                     'updated_models' => $response->updated_models,
@@ -34,6 +35,45 @@ class MicroserviceController
                 ]);
             }
         }
+
+//        return Microservice::whereJsonContains('base_models','user')->first();
+
+        foreach ($microservices as $microservice) {
+            $errors = [];
+            foreach ($microservice->all_models as $name => $value) {
+                $owner = Microservice::whereJsonContains('base_models', $name)->first();
+                if ($owner) {
+                    $errors['all_models'][$name] = $owner->all_models[$name] - $value;
+                } else {
+                    $errors['all_models'][$name] = 'دیتابیس اصلی یافت نشد';
+                }
+            }
+
+            foreach ($microservice->updated_models as $name => $value) {
+                $owner = Microservice::whereJsonContains('base_models', $name)->first();
+                if ($owner) {
+                    $errors['updated_models'][$name] = $owner->updated_models[$name] - $value;
+                } else {
+                    $errors['updated_models'][$name] = 'دیتابیس اصلی یافت نشد';
+                }
+            }
+
+            foreach ($microservice->deleted_models as $name => $value) {
+                $owner = Microservice::whereJsonContains('base_models', $name)->first();
+                if ($owner) {
+                    $errors['deleted_models'][$name] = $owner->deleted_models[$name] - $value;
+                } else {
+                    $errors['deleted_models'][$name] = 'دیتابیس اصلی یافت نشد';
+                }
+            }
+
+
+
+            $microservice->update(['model_errors' => $errors]);
+        }
+
+
+
 
         return response(['microservices' => $microservices, 'models' => $models], 200);
     }
