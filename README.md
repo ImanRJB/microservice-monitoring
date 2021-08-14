@@ -19,7 +19,7 @@ php artisan vendor:publish --tag=microservice-monitor
 new \Milyoona\MicroserviceMonitor\MicroserviceMonitor;
 ```
 
-#### Use these directives for <code>supervisor configs</code> in .env file
+###### Use these directives for <code>supervisor configs</code> in .env file
 
 ```dotenv
 SUPERVISOR_URL=
