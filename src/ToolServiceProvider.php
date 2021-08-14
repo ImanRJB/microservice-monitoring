@@ -18,8 +18,8 @@ class ToolServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/../config/nova-command-runner.php' => config_path('nova-command-runner.php'),
-        ], 'config');
+            __DIR__.'/../config/microservice-monitor.php' => config_path('microservice-monitor.php'),
+        ], 'microservice-monitor');
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'microservice-monitor');
 

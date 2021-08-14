@@ -1,12 +1,46 @@
 <template>
     <div>
-        <div class="title mb-6 mt-6">وضعیت میکروسرویس ها</div>
+        <div class="title mb-6 mt-6">وضعیت میکروسرویس ها و Supervisor</div>
         <card class="mb-6">
-            <div style="padding: 20px">
-                <div v-for="microservice in microservices" :class="['service-status', {'blink' : !microservice.status}]">
-                    <div style="text-align: center; text-transform:capitalize; font-weight: bold">{{ microservice.name.replace('ml_', '') }}</div>
-                </div>
-            </div>
+            <table class="table w-full">
+                <thead>
+                <tr>
+                    <th scope="col">میکروسرویس</th>
+                    <th scope="col">وضعیت سرویس</th>
+                    <th scope="col">وضعیت Supervisor</th>
+                    <th scope="col">عملیات Supervisor</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="microservice in microservices">
+                    <td style="text-align: center">{{ capitalizeFirstLetter(microservice.name.replace('ml_', '')) }}</td>
+                    <td style="text-align: center">
+                        <div :class="['service-status', {'blink' : !microservice.status}]">
+                            <div style="text-align: center; text-transform:capitalize; font-weight: bold"></div>
+                        </div>
+                    </td>
+                    <td style="text-align: center">
+                        <div :class="['supervisor-status',
+                         {'blink' : microservice['supervisor']['statename'] === 'FATAL' || microservice['supervisor']['statename'] === 'BACKOFF' || microservice['supervisor']['statename'] === 'NOT FOUND'},
+                         {'starting' : microservice['supervisor']['statename'] === 'STARTING' || microservice['supervisor']['statename'] === 'STOPPED'},
+                         {'runnig' : microservice['supervisor']['statename'] === 'RUNNING'}
+                         ]">
+                            <div v-if="microservice['supervisor'] == []" style="text-align: center;">
+                                یافت نشد
+                            </div>
+                            <div v-else style="text-align: center;">
+                                {{ microservice['supervisor']['statename'] }}
+                            </div>
+                        </div>
+                    </td>
+                    <td style="text-align: center">
+                        <button :disabled="disableButton" class="btn btn-success" @click="startSupervisor(microservice.name)">Start</button>
+                        <button :disabled="disableButton" class="btn btn-success" @click="restartSupervisor(microservice.name)">Restart</button>
+                        <button :disabled="disableButton" class="btn btn-danger" @click="stopSupervisor(microservice.name)">Stop</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </card>
 
 
@@ -15,7 +49,6 @@
                 <apexchart type="line" height="350" :options="errorChartOptions" :series="errorChartSeries"></apexchart>
             </div>
         </card>
-
 
 
         <div class="title mb-6 mt-6">مغایرت کل رکوردهای دیتابیس</div>
@@ -98,6 +131,7 @@ export default {
     },
     data() {
         return {
+            disableButton: false,
             microservices: {},
             models: {},
             errorChartSeries: [{
@@ -155,6 +189,54 @@ export default {
     methods: {
         capitalizeFirstLetter(string) {
             return string.charAt(0).toUpperCase() + string.slice(1);
+        },
+        startSupervisor(microservice) {
+            this.disableButton = true;
+            Nova.request().get(`/nova-vendor/milyoona/microservice-monitor/supervisor/start/${microservice}`)
+                .then(response => {
+                    this.disableButton = false;
+                    if (response.data.status === 200) {
+                        this.$toasted.show(response.data.message, {type: "success"});
+                    } else {
+                        this.$toasted.show(response.data.message, {type: "error"});
+                    }
+                })
+                .catch(error => {
+                    this.disableButton = false;
+                    this.$toasted.show("خطای ناشناس", {type: "error"});
+                })
+        },
+        restartSupervisor(microservice) {
+            this.disableButton = true;
+            Nova.request().get(`/nova-vendor/milyoona/microservice-monitor/supervisor/restart/${microservice}`)
+                .then(response => {
+                    this.disableButton = false;
+                    if (response.data.status === 200) {
+                        this.$toasted.show(response.data.message, {type: "success"});
+                    } else {
+                        this.$toasted.show(response.data.message, {type: "error"});
+                    }
+                })
+                .catch(error => {
+                    this.disableButton = false;
+                    this.$toasted.show("خطای ناشناس", {type: "error"});
+                })
+        },
+        stopSupervisor(microservice) {
+            this.disableButton = true;
+            Nova.request().get(`/nova-vendor/milyoona/microservice-monitor/supervisor/stop/${microservice}`)
+                .then(response => {
+                    this.disableButton = false;
+                    if (response.data.status === 200) {
+                        this.$toasted.show(response.data.message, {type: "success"});
+                    } else {
+                        this.$toasted.show(response.data.message, {type: "error"});
+                    }
+                })
+                .catch(error => {
+                    this.disableButton = false;
+                    this.$toasted.show("خطای ناشناس", {type: "error"});
+                })
         },
         getErrorsChart() {
             var microservices = [];
@@ -215,12 +297,34 @@ export default {
 }
 
 .service-status {
-    width: 110px;
+    width: 20px;
     background-color: rgb(90, 230, 172);
     display: inline-block;
     border-radius: 1px;
     padding: 10px;
     margin: 5px;
+    border-radius: 50%;
+}
+
+.supervisor-status {
+    width: 100px;
+    display: inline-block;
+    border-radius: 1px;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 8px;
+}
+
+.runnig {
+    background-color: rgb(90, 230, 172) !important;
+}
+
+.stop {
+    background-color: #dc3545 !important;
+}
+
+.starting {
+    background-color: #f3d618 !important;
 }
 
 .chart {
@@ -230,5 +334,30 @@ export default {
 .chart * {
     direction: ltr !important;
     font-family: Dana !important;
+}
+
+.btn {
+    border-radius: 8px;
+    text-align: center;
+    font-weight: normal;
+    padding: 10px;
+    margin: 0 10px;
+    outline: none !important;
+}
+
+.btn-success {
+    background-color: rgb(90, 230, 172);
+}
+
+.btn-success:hover:enabled {
+    background-color: green;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+}
+
+.btn-danger:hover:enabled {
+    background-color: #840000;
 }
 </style>

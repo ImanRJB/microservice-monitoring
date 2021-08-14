@@ -16,4 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/microservices', MicroserviceController::class . '@index');
+Route::get('/supervisor/start/{microservice}', MicroserviceController::class . '@supervisorStart');
+Route::get('/supervisor/restart/{microservice}', MicroserviceController::class . '@supervisorRestart');
+Route::get('/supervisor/stop/{microservice}', MicroserviceController::class . '@supervisorStop');
 
