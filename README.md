@@ -12,10 +12,10 @@ composer require milyoona/microservice-monitor
 php artisan vendor:publish --tag=microservice-monitor
 ```
 
-###### Add tool in Laravel Nova <code>tools</code> method:
+###### Add monitoring tool in <code>Laravel Nova</code>:
 
 ```php
-// add this line to NovaServiceProvider.php
+// NovaServiceProvider.php - tools method
 new \Milyoona\MicroserviceMonitor\MicroserviceMonitor;
 ```
 
