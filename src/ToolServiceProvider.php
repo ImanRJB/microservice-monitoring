@@ -21,6 +21,14 @@ class ToolServiceProvider extends ServiceProvider
             __DIR__.'/../config/microservice-monitor.php' => config_path('microservice-monitor.php'),
         ], 'microservice-monitor');
 
+        $this->publishes([
+            __DIR__.'/../database/migrations/2021_08_04_145607_create_microservices_table.php' => database_path('migrations/2021_08_04_145607_create_microservices_table.php'),
+        ], 'microservice-monitor');
+
+        $this->publishes([
+            __DIR__.'/../database/seeders/MicroserviceSeeder.php' => database_path('seeders/MicroserviceSeeder.php'),
+        ], 'microservice-monitor');
+
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'microservice-monitor');
 
         $this->app->booted(function () {
