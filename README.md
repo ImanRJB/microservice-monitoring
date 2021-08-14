@@ -12,11 +12,11 @@ composer require milyoona/microservice-monitor
 php artisan vendor:publish --tag=microservice-monitor
 ```
 
-###### Add tool in <code>Laravel Nova Tools</code>:
+###### Add tool in Laravel Nova <code>tools</code> method:
 
 ```php
 // add this line to NovaServiceProvider.php
-new \Milyoona\MicroserviceMonitor\MicroserviceMonitor
+new \Milyoona\MicroserviceMonitor\MicroserviceMonitor;
 ```
 
 #### Use these directives for <code>supervisor configs</code> in .env file
