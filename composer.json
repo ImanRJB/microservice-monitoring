@@ -10,7 +10,8 @@
         "php-http/httplug": "^2.2",
         "php-http/message": "^1.11",
         "supervisorphp/supervisor": "^4.0",
-        "http-interop/http-factory-guzzle": "^1.2"
+        "http-interop/http-factory-guzzle": "^1.2",
+        "lstrojny/fxmlrpc": "^0.20.0"
     },
     "autoload": {
         "psr-4": {
