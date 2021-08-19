@@ -24,10 +24,5 @@
                 "Milyoona\\MicroserviceMonitor\\ToolServiceProvider"
             ]
         }
-    },
-    "config": {
-        "sort-packages": true
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true
+    }
 }
