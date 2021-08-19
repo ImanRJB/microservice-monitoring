@@ -5,7 +5,6 @@
     "license": "MIT",
     "require": {
         "php": ">=7.1.0",
-        "guzzlehttp/guzzle": "^6.0",
         "php-http/guzzle6-adapter": "^2.0",
         "php-http/httplug": "^2.2",
         "php-http/message": "^1.11",
