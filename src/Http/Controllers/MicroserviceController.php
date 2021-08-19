@@ -133,7 +133,7 @@ class MicroserviceController
             config('microservice-monitor.supervisor_url'),
             new \fXmlRpc\Transport\HttpAdapterTransport(
                 new \Http\Message\MessageFactory\GuzzleMessageFactory(),
-                new \Http\Adapter\Guzzle6\Client($guzzleClient)
+                new \Http\Adapter\Guzzle7\Client($guzzleClient)
             )
         );
 
