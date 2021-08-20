@@ -27,6 +27,7 @@ class MicroserviceSeeder extends Seeder
             ['name' => 'ml_notification', 'hostname' => 'http://127.0.0.1', 'port' => 10600, 'consumer_logs' => 0, 'consumer_error_logs' => 0, 'status' => 0],
             ['name' => 'ml_terminal', 'hostname' => 'http://127.0.0.1', 'port' => 10300, 'consumer_logs' => 0, 'consumer_error_logs' => 0, 'status' => 0],
             ['name' => 'ml_iban', 'hostname' => 'http://127.0.0.1', 'port' => 10400, 'consumer_logs' => 0, 'consumer_error_logs' => 0, 'status' => 0],
+            ['name' => 'ml_ticket', 'hostname' => 'http://127.0.0.1', 'port' => 11100, 'consumer_logs' => 0, 'consumer_error_logs' => 0, 'status' => 0],
             ['name' => 'ml_balance', 'hostname' => 'http://127.0.0.1', 'port' => 8027, 'consumer_logs' => 0, 'consumer_error_logs' => 0, 'status' => 0],
             ['name' => 'ml_home', 'hostname' => 'http://127.0.0.1', 'port' => 8028, 'consumer_logs' => 0, 'consumer_error_logs' => 0, 'status' => 0],
             ['name' => 'ml_ipg', 'hostname' => 'http://127.0.0.1', 'port' => 8029, 'consumer_logs' => 0, 'consumer_error_logs' => 0, 'status' => 0],
