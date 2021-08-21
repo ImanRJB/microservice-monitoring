@@ -134,6 +134,7 @@ export default {
             disableButton: false,
             microservices: {},
             models: {},
+            interval: null,
             errorChartSeries: [{
                 name: "Errors",
                 data: []
@@ -182,9 +183,12 @@ export default {
     },
     mounted() {
         this.getMicroservices();
-        window.setInterval(() => {
+        this.interval = setInterval(() => {
             this.getMicroservices();
-        }, 5000)
+        }, 15000)
+    },
+    beforeDestroy() {
+        clearInterval(this.interval);
     },
     methods: {
         capitalizeFirstLetter(string) {
