@@ -95,6 +95,7 @@ class MicroserviceController
         try {
             $supervisor = self::getSupervisor();
             $supervisor->stopProcess($microservice, false);
+            sleep(2);
             $supervisor->startProcess($microservice, false);
             return response(['message' => 'سرویس با موفقیت ریست شد', 'status' => 200]);
         } catch (\Exception $exception) {
